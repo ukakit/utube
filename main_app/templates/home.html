@@ -3,4 +3,15 @@
 {% block content %}
 
 <h1>uTube Homepage</h1>
+    {% for video in videos %}
+            <div class="videos">
+                <a href="{% url 'video_detail' video.pk %}">
+                    <span><b>{{video.title}}</b></span>
+                    <br>
+                    <img src="{{video.thumbnail}}" alt="">
+                    <br>
+                    <span>Uploaded by: {{video.user}}</span>
+                </a>
+              </div>
+    {% endfor %}
 {% endblock %}
