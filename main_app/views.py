@@ -11,6 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import Video
 from django.db.models import F
+from django.contrib.auth.mixins import UserPassesTestMixin, AccessMixin
+
 
 @method_decorator(login_required, name='dispatch')
 class Home(TemplateView):
@@ -52,3 +54,25 @@ class VideoDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+class VideoCreate(CreateView):
+    model = Video
+    fields = ['title', 'description', 'thumbnail']
+    template_name = 'video_create.html'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(VideoCreate, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('video_detail', kwargs={'pk': self.object.pk})
+
+class VideoUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
+    model = Video
+    fields = ['title', 'description', 'thumbnail']
+    template_name = "video_update.html"
+    permission_denied_message = 'not owner'    
+    def test_func(self):
+        return self.request.user == self.get_object().user
+    def get_success_url(self):
+        reverse('video_detail', kwargs={'pk': self.object.pk})

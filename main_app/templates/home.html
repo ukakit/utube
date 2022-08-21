@@ -11,6 +11,12 @@
                     <img src="{{video.thumbnail}}" alt="">
                     <br>
                     <span>Uploaded by: {{video.user}}</span>
+                    <br>
+                    {% if video.view > 1 %}
+                        <span>{{video.view}} Views • {{video.created_at|date:"M d Y"}}</span>
+                    {% elif video.view <= 1 %}
+                        <span>{{video.view}} View • {{video.created_at|date:"M d Y"}}</span>
+                    {% endif %}
                 </a>
               </div>
     {% endfor %}

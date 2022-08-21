@@ -5,4 +5,7 @@
 <p>{{video.description}}</p>
 <p>Views: {{video.view}}</p>
 <p>Uploaded by: {{video.user}}</p>
+<a href="{% url 'video_update' video.pk %}">
+    <i>Edit</i>
+</a>
 {% endblock %}
