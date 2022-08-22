@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView
@@ -9,9 +9,11 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Video
 from django.db.models import F
 from django.contrib.auth.mixins import UserPassesTestMixin, AccessMixin
+from .models import Video, Comment
+from .form import CommentForm
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -23,7 +25,6 @@ class Home(TemplateView):
         return context
 
 class Signup(View):
-    # show a form to fill out
     def get(self, request):
         form = UserCreationForm()
         context = {"form": form}
@@ -53,7 +54,39 @@ class VideoDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        pk = self.kwargs["pk"]
+        form = CommentForm()
+        video = get_object_or_404(Video, pk=pk)
+        comments = video.comment_set.all()
+
+        context['video'] = video
+        context['comments'] = comments
+        context['form'] = form
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+
+        video = Video.objects.filter(id=self.kwargs['pk'])[0]
+        comments = video.comment_set.all()
+
+        context['video'] = video
+        context['comments'] = comments
+        context['form'] = form
+
+        if form.is_valid():
+            body = form.cleaned_data['body']
+            # creates the form on db
+            comment = Comment.objects.create(
+                body=body, video=video, user_id = self.request.user.id
+            )
+            form = CommentForm()
+            context['form'] = form
+            return self.render_to_response(context=context)
+        # currently, if text area is empty, page refreshes, no comment is added, but without the following line, breaks
+        return self.render_to_response(context=context)
 
 class VideoCreate(CreateView):
     model = Video
@@ -76,3 +109,11 @@ class VideoUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
         return self.request.user == self.get_object().user
     def get_success_url(self):
         reverse('video_detail', kwargs={'pk': self.object.pk})
+
+class VideoDelete(UserPassesTestMixin, AccessMixin,DeleteView):
+    model = Video
+    template_name = "video_delete_confirmation.html"
+    success_url = "/"
+    permission_denied_message = 'not owner'    
+    def test_func(self):
+        return self.request.user == self.get_object().user

@@ -7,5 +7,6 @@ urlpatterns = [
     path('video/<int:pk>/', views.VideoDetail.as_view(), name="video_detail"),
     path('video/upload/', views.VideoCreate.as_view(), name="video_create"),
     path('video/<int:pk>/edit',views.VideoUpdate.as_view(), name="video_update"),
+    path('video/<int:pk>/delete',views.VideoDelete.as_view(), name="video_delete"),
 
 ]
