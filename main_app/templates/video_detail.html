@@ -33,7 +33,12 @@
         </div>
         <div class="col-12">
           <p>{{ comment.body }}</p>
-          <p><small>{{ comment.created_at }}</small></p>
+          <p><small>{{ comment.created_at|timesince }} ago</small></p>
+          <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
+            <span class="icon">
+                <i class="fa-regular fa-edit"></i>
+            </span>
+        </a>
         </div>
       </div>
     </div>

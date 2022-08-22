@@ -110,10 +110,23 @@ class VideoUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
     def get_success_url(self):
         reverse('video_detail', kwargs={'pk': self.object.pk})
 
-class VideoDelete(UserPassesTestMixin, AccessMixin,DeleteView):
+class VideoDelete(UserPassesTestMixin, AccessMixin, DeleteView):
+
     model = Video
     template_name = "video_delete_confirmation.html"
     success_url = "/"
     permission_denied_message = 'not owner'    
     def test_func(self):
         return self.request.user == self.get_object().user
+
+class CommentUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
+    model = Comment
+    fields = ['body']
+    template_name = "comment_update.html"
+    permission_denied_message = 'not owner'
+    def test_func(self):
+        print(self.request.user)
+        return self.request.user == self.get_object().user
+    def get_success_url(self):
+        video_id = self.object.video_id
+        return (f'/video/{video_id}')

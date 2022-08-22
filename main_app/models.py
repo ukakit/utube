@@ -15,7 +15,7 @@ class Video(models.Model):
     def __str__(self):
         return self.title
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
 
 class Comment(models.Model):
     body = models.TextField(max_length=500)
@@ -25,3 +25,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.body
+
+    class Meta:
+        ordering = ['-created_at']

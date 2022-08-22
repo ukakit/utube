@@ -13,9 +13,9 @@
                     <span>Uploaded by: {{video.user}}</span>
                     <br>
                     {% if video.view > 1 %}
-                        <span>{{video.view}} Views • {{video.created_at|date:"M d Y"}}</span>
+                        <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
                     {% elif video.view <= 1 %}
-                        <span>{{video.view}} View • {{video.created_at|date:"M d Y"}}</span>
+                        <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
                     {% endif %}
                 </a>
               </div>

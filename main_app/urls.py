@@ -8,5 +8,5 @@ urlpatterns = [
     path('video/upload/', views.VideoCreate.as_view(), name="video_create"),
     path('video/<int:pk>/edit',views.VideoUpdate.as_view(), name="video_update"),
     path('video/<int:pk>/delete',views.VideoDelete.as_view(), name="video_delete"),
-
+    path('video/<int:video_pk>/comment/<int:pk>/edit',views.CommentUpdate.as_view(), name="comment_update"),
 ]
