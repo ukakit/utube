@@ -130,3 +130,17 @@ class CommentUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
     def get_success_url(self):
         video_id = self.object.video_id
         return (f'/video/{video_id}')
+
+class CommentDelete(UserPassesTestMixin, AccessMixin, DeleteView):
+    model = Comment
+    template_name = "comment_delete_confirmation.html"
+    permission_denied_message = 'not owner'    
+    def test_func(self):
+        return self.request.user == self.get_object().user
+    def get_success_url(self):
+        video_id = self.object.video_id
+        return (f'/video/{video_id}')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['video_pk'] = kwargs['object'].video_id
+        return context

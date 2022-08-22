@@ -1,21 +1,24 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block content %}
 <p>video detail page</p>
+<p>{{user.id}}</p>
 <p>{{video.title}}</p>
 <img src="{{video.thumbnail}}" alt="" srcset="">
 <p>{{video.description}}</p>
 <p>Views: {{video.view}}</p>
 <p>Uploaded by: {{video.user}}</p>
+{% if video.user_id == user.id %}
 <a href="{% url 'video_update' video.pk %}">
-    <span class="icon">
-        <i class="fa-regular fa-edit"></i>
-    </span>
+  <span class="icon">
+    <i class="fa-regular fa-edit"></i>
+  </span>
 </a>
 <a href="{% url 'video_delete' video.pk %}">
-    <span class="icon">
-      <i class="fa-regular fa-trash-can"></i>
-    </span>
+  <span class="icon">
+    <i class="fa-regular fa-trash-can"></i>
+  </span>
 </a>
+{% endif %}
 
 <!-- if there are comments, show how many comments there are, as well as iterate through the list of comments and showing them. -->
 {% if comments %}
@@ -34,11 +37,18 @@
         <div class="col-12">
           <p>{{ comment.body }}</p>
           <p><small>{{ comment.created_at|timesince }} ago</small></p>
+          {% if comment.user_id == user.id %}
           <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
             <span class="icon">
-                <i class="fa-regular fa-edit"></i>
+              <i class="fa-regular fa-edit"></i>
             </span>
-        </a>
+          </a>
+          <a href="{% url 'comment_delete' video_pk=video.pk pk=comment.id%}">
+            <span class="icon">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+          </a>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -54,8 +64,8 @@
     <form method='POST'>
       {% csrf_token %}
       <div class="form-group">
-        <textarea class="form-control {% if form.body.errors %}is-invalid{% endif %}" id="id_body"
-          name="body" rows="4">{{ form.body.value|default:'' }}</textarea>
+        <textarea class="form-control {% if form.body.errors %}is-invalid{% endif %}" id="id_body" name="body"
+          rows="4">{{ form.body.value|default:'' }}</textarea>
       </div>
       <button type="submit">Comment</button>
     </form>
