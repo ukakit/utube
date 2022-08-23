@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
 <p>video detail page</p>
-<p>{{user.id}}</p>
-<p>{{video.title}}</p>
-<img src="{{video.thumbnail}}" alt="" srcset="">
-<p>{{video.description}}</p>
+<p>user Id: {{user.id}}</p>
+<p>title: {{video.title}}</p>
+{% if not thumbnail %}
+  {% if video.user_id == user.id %}
+    <form action="{% url 'add_thumb' video.id %}" enctype="multipart/form-data" method="POST" alt="thumbnail">
+      {% csrf_token %}
+      <input type="file" name="photo-file">
+      <br>
+      <input type="submit" value="Upload Thumbnail">
+    </form>
+  {% endif %}
+  {% elif thumbnail %}
+  <img src="{{thumbnail.url}}" alt="" srcset="">
+{% endif %}
+<p>description: {{video.description}}</p>
 <p>Views: {{video.view}}</p>
 <p>Uploaded by: {{video.user}}</p>
 {% if video.user_id == user.id %}

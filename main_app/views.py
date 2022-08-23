@@ -1,6 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
-from django.http import HttpResponse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
@@ -11,9 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import F
 from django.contrib.auth.mixins import UserPassesTestMixin, AccessMixin
-from .models import Video, Comment
+from .models import Video, Comment, Thumbnail
 from .form import CommentForm
-
+import uuid
+import boto3
+import os
 
 
 @method_decorator(login_required, name='dispatch')
@@ -22,6 +23,14 @@ class Home(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['videos'] = Video.objects.all()
+        for i in range(len(context['videos'])):
+            video_id = context['videos'][i].id
+            try:
+                thumbnail = Thumbnail.objects.get(video_id=video_id)
+                context['videos'][i].thumbnail = thumbnail.url
+                print(context['videos'][i]['thumbnail'])
+            except :
+                pass
         return context
 
 class Signup(View):
@@ -58,7 +67,11 @@ class VideoDetail(DetailView):
         form = CommentForm()
         video = get_object_or_404(Video, pk=pk)
         comments = video.comment_set.all()
-
+        try:
+            thumbnail = Thumbnail.objects.get(video_id=pk)
+            context['thumbnail'] = thumbnail
+        except :
+            pass
         context['video'] = video
         context['comments'] = comments
         context['form'] = form
@@ -90,7 +103,7 @@ class VideoDetail(DetailView):
 
 class VideoCreate(CreateView):
     model = Video
-    fields = ['title', 'description', 'thumbnail']
+    fields = ['title', 'description']
     template_name = 'video_create.html'
 
     def form_valid(self, form):
@@ -144,3 +157,18 @@ class CommentDelete(UserPassesTestMixin, AccessMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['video_pk'] = kwargs['object'].video_id
         return context
+
+def add_thumb(request, pk):
+    photo_file = request.FILES.get('photo-file', None)
+    if photo_file:
+        s3 = boto3.client('s3')
+        key = uuid.uuid4().hex[:8] + photo_file.name[photo_file.name.rfind('.'):]
+        try:
+            bucket = os.environ['S3_BUCKET']
+            s3.upload_fileobj(photo_file, bucket, key)
+            url = f"https://{bucket}.{os.environ['S3_BASE_URL']}{key}"
+            Thumbnail.objects.create(url=url, video_id=pk)
+        except Exception as e:
+            print('error occurred')
+            print(e)
+    return redirect('video_detail', pk=pk)

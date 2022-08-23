@@ -7,7 +7,6 @@ class Video(models.Model):
 
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=500)
-    thumbnail = models.CharField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
     view = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -28,3 +27,10 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+class Thumbnail(models.Model):
+    url = models.CharField(max_length=250)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Thumbnail for video_id: {self.video_id} @ {self.url}'
