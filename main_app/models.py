@@ -34,3 +34,10 @@ class Thumbnail(models.Model):
 
     def __str__(self):
         return f'Thumbnail for video_id: {self.video_id} @ {self.url}'
+
+class Media(models.Model):
+    url = models.CharField(max_length=250)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Media for video_id: {self.video_id} @ {self.url}'

@@ -3,7 +3,8 @@
 <p>video detail page</p>
 <p>user Id: {{user.id}}</p>
 <p>title: {{video.title}}</p>
-{% if not thumbnail %}
+
+<!-- {% if not thumbnail %}
   {% if video.user_id == user.id %}
     <form action="{% url 'add_thumb' video.id %}" enctype="multipart/form-data" method="POST" alt="thumbnail">
       {% csrf_token %}
@@ -12,9 +13,22 @@
       <input type="submit" value="Upload Thumbnail">
     </form>
   {% endif %}
-  {% elif thumbnail %}
+{% elif thumbnail %}
   <img src="{{thumbnail.url}}" alt="" srcset="">
+{% endif %} -->
+{% if not media %}
+  {% if video.user_id == user.id %}
+    <form action="{% url 'add_media' video.id %}" enctype="multipart/form-data" method="POST" alt="media">
+      {% csrf_token %}
+      <input type="file" name="media-file">
+      <br>
+      <input type="submit" value="Upload Media">
+    </form>
+  {% endif %}
+{% elif media %}
+  <video src="{{media.url}}" controls></video>
 {% endif %}
+
 <p>description: {{video.description}}</p>
 <p>Views: {{video.view}}</p>
 <p>Uploaded by: {{video.user}}</p>

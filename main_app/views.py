@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import F
 from django.contrib.auth.mixins import UserPassesTestMixin, AccessMixin
-from .models import Video, Comment, Thumbnail
+from .models import Video, Comment, Thumbnail, Media
 from .form import CommentForm
 import uuid
 import boto3
@@ -70,8 +70,15 @@ class VideoDetail(DetailView):
         try:
             thumbnail = Thumbnail.objects.get(video_id=pk)
             context['thumbnail'] = thumbnail
+            print(thumbnail)
         except :
             pass
+        try:
+            media = Media.objects.get(video_id=pk)
+            context['media'] = media
+        except :
+            pass
+        
         context['video'] = video
         context['comments'] = comments
         context['form'] = form
@@ -115,7 +122,7 @@ class VideoCreate(CreateView):
 
 class VideoUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
     model = Video
-    fields = ['title', 'description', 'thumbnail']
+    fields = ['title', 'description']
     template_name = "video_update.html"
     permission_denied_message = 'not owner'    
     def test_func(self):
@@ -168,6 +175,21 @@ def add_thumb(request, pk):
             s3.upload_fileobj(photo_file, bucket, key)
             url = f"https://{bucket}.{os.environ['S3_BASE_URL']}{key}"
             Thumbnail.objects.create(url=url, video_id=pk)
+        except Exception as e:
+            print('error occurred')
+            print(e)
+    return redirect('video_detail', pk=pk)
+
+def add_media(request, pk):
+    media_file = request.FILES.get('media-file', None)
+    if media_file:
+        s3 = boto3.client('s3')
+        key = uuid.uuid4().hex[:8] + media_file.name[media_file.name.rfind('.'):]
+        try:
+            bucket = os.environ['S3_BUCKET']
+            s3.upload_fileobj(media_file, bucket, key)
+            url = f"https://{bucket}.{os.environ['S3_BASE_URL']}{key}"
+            Media.objects.create(url=url, video_id=pk)
         except Exception as e:
             print('error occurred')
             print(e)
