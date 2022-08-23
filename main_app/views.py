@@ -16,8 +16,9 @@ import uuid
 import boto3
 import os
 
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 
-@method_decorator(login_required, name='dispatch')
 class Home(TemplateView):
     template_name = "home.html"
     def get_context_data(self, **kwargs):
@@ -48,6 +49,7 @@ class Signup(View):
             context = {"form": form}
             return render(request, "registration/signup.html", context)
 
+@method_decorator(login_required, name='dispatch')
 class VideoDetail(DetailView):
     model = Video
     template_name = "video_detail.html"
@@ -70,7 +72,6 @@ class VideoDetail(DetailView):
         try:
             thumbnail = Thumbnail.objects.get(video_id=pk)
             context['thumbnail'] = thumbnail
-            print(thumbnail)
         except :
             pass
         try:
@@ -78,7 +79,6 @@ class VideoDetail(DetailView):
             context['media'] = media
         except :
             pass
-        
         context['video'] = video
         context['comments'] = comments
         context['form'] = form
@@ -108,6 +108,7 @@ class VideoDetail(DetailView):
         # currently, if text area is empty, page refreshes, no comment is added, but without the following line, breaks
         return self.render_to_response(context=context)
 
+@method_decorator(login_required, name='dispatch')
 class VideoCreate(CreateView):
     model = Video
     fields = ['title', 'description']
@@ -167,7 +168,7 @@ class CommentDelete(UserPassesTestMixin, AccessMixin, DeleteView):
 
 def add_thumb(request, pk):
     photo_file = request.FILES.get('photo-file', None)
-    if photo_file:
+    if photo_file and photo_file.size < 1000000:
         s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:8] + photo_file.name[photo_file.name.rfind('.'):]
         try:
@@ -178,11 +179,14 @@ def add_thumb(request, pk):
         except Exception as e:
             print('error occurred')
             print(e)
+    elif (photo_file.size > 1000000):
+        messages.info(request, 'The thumbnail you have chosen is too big! We only accept file size less than 1MB.')
+        return HttpResponseRedirect(f'/video/{pk}')
     return redirect('video_detail', pk=pk)
 
 def add_media(request, pk):
     media_file = request.FILES.get('media-file', None)
-    if media_file:
+    if media_file and media_file.size < 50000000:
         s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:8] + media_file.name[media_file.name.rfind('.'):]
         try:
@@ -193,4 +197,7 @@ def add_media(request, pk):
         except Exception as e:
             print('error occurred')
             print(e)
+    elif (media_file.size > 1000000):
+        messages.info(request, 'The video you have chosen is too big! We only accept file size less than 50MB.')
+        return HttpResponseRedirect(f'/video/{pk}')
     return redirect('video_detail', pk=pk)

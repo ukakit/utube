@@ -3,8 +3,14 @@
 <p>video detail page</p>
 <p>user Id: {{user.id}}</p>
 <p>title: {{video.title}}</p>
-
-<!-- {% if not thumbnail %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% if not thumbnail %}
   {% if video.user_id == user.id %}
     <form action="{% url 'add_thumb' video.id %}" enctype="multipart/form-data" method="POST" alt="thumbnail">
       {% csrf_token %}
@@ -15,11 +21,12 @@
   {% endif %}
 {% elif thumbnail %}
   <img src="{{thumbnail.url}}" alt="" srcset="">
-{% endif %} -->
+{% endif %}
 {% if not media %}
   {% if video.user_id == user.id %}
     <form action="{% url 'add_media' video.id %}" enctype="multipart/form-data" method="POST" alt="media">
       {% csrf_token %}
+      <label for="media-file">We support MP4, WebM, and OGG formats!</label>
       <input type="file" name="media-file">
       <br>
       <input type="submit" value="Upload Media">
