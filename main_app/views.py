@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.base import TemplateView
@@ -10,8 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import F
 from django.contrib.auth.mixins import UserPassesTestMixin, AccessMixin
-from .models import Video, Comment, Thumbnail, Media
-from .form import CommentForm
+from .models import User, Video, Comment, Thumbnail, Media
+from .forms import CommentForm, EditProfileForm
 import uuid
 import boto3
 import os
@@ -146,7 +147,6 @@ class CommentUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
     template_name = "comment_update.html"
     permission_denied_message = 'not owner'
     def test_func(self):
-        print(self.request.user)
         return self.request.user == self.get_object().user
     def get_success_url(self):
         video_id = self.object.video_id
@@ -201,3 +201,23 @@ def add_media(request, pk):
         messages.info(request, 'The video you have chosen is too big! We only accept file size less than 50MB.')
         return HttpResponseRedirect(f'/video/{pk}')
     return redirect('video_detail', pk=pk)
+
+class UserDetail(DetailView):
+    model = User
+    template_name = "users/profile.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(self.kwargs['pk'])
+        context['videos'] = Video.objects.filter(user_id = context['user'].id)
+        print(context)
+        return context
+
+class UserUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
+    model = User
+    fields = ['username',]
+    template_name = "users/edit.html"
+    permission_denied_message = 'not owner'    
+    def test_func(self):
+        return self.request.user.id == self.get_object().id
+    def get_success_url(self):
+        reverse('user_detail', kwargs={'pk': self.object.pk})

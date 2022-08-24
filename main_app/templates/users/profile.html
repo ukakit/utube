@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+  <div class="col-6">
+      <h2>{{user.username}}'s Channel</h2>
+      <h2>Most Recent Uploads</h2>
+      {% for video in videos %}
+          <div class="videos">
+              <a href="{% url 'video_detail' video.pk %}">
+                  <span><b>{{video.title}}</b></span>
+                  <br>
+                  {% if video.thumbnail %}
+                      <img src="{{video.thumbnail}}" alt="thumbnail">
+                  {% else %}
+                      <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
+                  {% endif %}
+                  {% if video.view > 1 %}
+                      <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
+                  {% elif video.view <= 1 %}
+                      <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
+                  {% endif %}
+              </a>
+            </div>
+  {% endfor %}
+    <br>
+  </div>
+</div>
+{% endblock content %}

@@ -7,29 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'styles/main.css' %}" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- <script src="{% static 'scripts/all.min.js' %}" defer></script> -->
+    <script src="{% static 'scripts/all.min.js' %}" defer></script>
     <title>uTube</title>
 </head>
 <body class="bg-zinc-300">
-    <nav class="navbar text-white bg-black" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/">uTube</a>
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
+    <nav class="flex items-center text-white bg-black px-4" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand start">
+            <a class="navbar-item p-5" href="/">uTube</a>
+        </div>
+        <div class="center grow text-center">
+            <p>Search</p>
         </div>
         {% if user.is_authenticated %}
-            <div class="navbar-menu navbar-end">
-                <span class="navbar-item">Welcome: {{user.username}}</span>
-                <a class="navbar-item" href="{% url 'video_create' %}">Upload a Video</a>
-                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+            <div class="end navbar-menu flex items-center">
+                <a class="navbar-item p-5" href="{% url 'video_create' %}"><i class="fa-solid fa-cloud-arrow-up"></i></a>
+                <div class="user-options flex flex-col items-end">
+                    <a href="{% url 'user_detail' user.id%}">{{user.username}}</a>
+                    <a href="{% url 'edit_profile' user.id%}">Edit your profile</a>
+                    <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                </div>
             </div>
         {% else %}
-            <div class="navbar-menu navbar-end">
-            <a class="navbar-item" href="{% url 'signup' %}">Sign Up</a>
-            <a class="navbar-item" href="{% url 'login' %}">Log In</a>
+            <div class="end navbar-menu flex items-center">
+            <a class="navbar-item p-5" href="{% url 'signup' %}">Sign Up</a>
+            <a class="navbar-item p-5" href="{% url 'login' %}">Log In</a>
             </div>
         {% endif %}
     </nav>

@@ -12,4 +12,6 @@ urlpatterns = [
     path('video/<int:pk>/delete',views.VideoDelete.as_view(), name="video_delete"),
     path('video/<int:video_pk>/comment/<int:pk>/edit',views.CommentUpdate.as_view(), name="comment_update"),
     path('video/<int:video_pk>/comment/<int:pk>/delete',views.CommentDelete.as_view(), name="comment_delete"),
+    path('account/<int:pk>/', views.UserDetail.as_view(), name='user_detail'),
+    path('account/<int:pk>/edit/', views.UserUpdate.as_view(), name='edit_profile'),
 ]

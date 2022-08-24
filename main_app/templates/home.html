@@ -2,27 +2,22 @@
 {% load static %}
 
 {% block content %}
-
-<h1>uTube Homepage</h1>
-    {% for video in videos %}
-            <div class="videos">
-                <a href="{% url 'video_detail' video.pk %}">
-                    <span><b>{{video.title}}</b></span>
-                    <br>
-                    {% if video.thumbnail %}
-                        <img src="{{video.thumbnail}}" alt="thumbnail">
-                    {% else %}
-                        <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
-                    {% endif %}
-                    <br>
-                    <span>Uploaded by: {{video.user}}</span>
-                    <br>
-                    {% if video.view > 1 %}
-                        <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
-                    {% elif video.view <= 1 %}
-                        <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
-                    {% endif %}
-                </a>
-              </div>
-    {% endfor %}
+{% for video in videos %}
+        <div class="video flex flex-col">
+            <a href="{% url 'video_detail' video.pk %}">
+                {% if video.thumbnail %}
+                <img src="{{video.thumbnail}}" alt="thumbnail">
+                {% else %}
+                <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
+                {% endif %}
+                <span><b>{{video.title}}</b></span>
+                <a href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+            </a>
+                {% if video.view > 1 %}
+                    <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
+                {% elif video.view <= 1 %}
+                    <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
+                {% endif %}
+            </div>
+{% endfor %}
 {% endblock %}
