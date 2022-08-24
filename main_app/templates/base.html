@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'scripts/all.min.js' %}" defer></script>
     <link rel="stylesheet" href="{% static 'styles/main.css' %}" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="{% static 'scripts/all.min.js' %}" defer></script>
     <title>uTube</title>
 </head>
 <body class="bg-zinc-300">
@@ -34,7 +34,7 @@
             </div>
         {% endif %}
     </nav>
-    <div class="container border-solid border-red-500 border-2">
+    <div class="container">
 
         {% block content %}{% endblock %}
 

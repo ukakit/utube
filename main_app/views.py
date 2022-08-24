@@ -81,6 +81,10 @@ class VideoDetail(DetailView):
         except :
             pass
         context['video'] = video
+        context['short_description'] = context['video'].description[:100]
+        print(context['short_description'])
+        context['rest_description'] = context['video'].description[100:]
+
         context['comments'] = comments
         context['form'] = form
         return context
