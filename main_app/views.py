@@ -1,3 +1,4 @@
+from random import shuffle
 from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
@@ -12,7 +13,7 @@ from django.utils.decorators import method_decorator
 from django.db.models import F
 from django.contrib.auth.mixins import UserPassesTestMixin, AccessMixin
 from .models import User, Video, Comment, Thumbnail, Media
-from .forms import CommentForm, EditProfileForm
+from .forms import CommentForm
 import uuid
 import boto3
 import os
@@ -81,6 +82,10 @@ class VideoDetail(DetailView):
         except :
             pass
         context['video'] = video
+        all_vid = list(Video.objects.all())
+        shuffle(all_vid)
+        rec_vids = all_vid[:5]
+        context['rec_vids'] = rec_vids
         context['short_description'] = context['video'].description[:100]
         context['rest_description'] = context['video'].description[100:]
         context['comments'] = comments
@@ -95,6 +100,10 @@ class VideoDetail(DetailView):
         video = Video.objects.filter(id=pk)[0]
         comments = video.comment_set.all()
         context['video'] = video
+        all_vid = list(Video.objects.all())
+        shuffle(all_vid)
+        rec_vids = all_vid[:5]
+        context['rec_vids'] = rec_vids
         context['short_description'] = context['video'].description[:100]
         context['rest_description'] = context['video'].description[100:]
         context['comments'] = comments

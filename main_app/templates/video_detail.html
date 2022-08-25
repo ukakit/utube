@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="video-player-container grid grid-cols-12 gap-2">
-  <div class="primary col-span-10 pt-6 pr-6 ml-6">
+<div class="video-player-container grid grid-cols-2 md:grid-cols-12">
+  <div class="primary col-span-9 lg:col-span-8 pt-6 pr-6 ml-6">
     {% if messages %}
       <ul class="messages">
         {% for message in messages %}
@@ -13,24 +13,25 @@
     {% if not thumbnail and video.user_id == user.id %}
       <div class="thumbnail-upload-container">
         <h2>Upload a Thumbnail:</h2>
-        <form action="{% url 'add_thumb' video.id %}" enctype="multipart/form-data" method="POST" alt="thumbnail">
+        <form action="{% url 'add_thumb' video.id %}" enctype="multipart/form-data" method="POST" alt="thumbnail" class='pl-2'>
           {% csrf_token %}
-          <input type="file" name="photo-file">
+          <input type="file" name="photo-file" class="my-2 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm sm:w-auto px-2.5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-500 dark:focus:ring-red-800">
           <br>
-          <input type="submit" value="Upload">
+          <input type="submit" value="Upload" class="my-2 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm sm:w-auto px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-500 dark:focus:ring-red-800">
         </form>
       </div>
     {% endif %}
     {% if not media %}
       {% if video.user_id == user.id %}
         <div class="video-upload-container">
-          <h2>Upload the Video File:</h2>
-          <form action="{% url 'add_media' video.id %}" enctype="multipart/form-data" method="POST" alt="media">
+          <h2>Upload Video File:</h2>
+          <form action="{% url 'add_media' video.id %}" enctype="multipart/form-data" method="POST" alt="media" class='pl-2'>
             {% csrf_token %}
-            <label for="media-file">We support MP4, WebM, and OGG formats!</label>
-            <input type="file" name="media-file">
+            <label for="media-file" class='italic text-sm'>We support MP4, WebM, and OGG formats!</label>
             <br>
-            <input type="submit" value="Upload">
+            <input type="file" name="media-file" class="my-2 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm sm:w-auto px-2.5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-500 dark:focus:ring-red-800">
+            <br>
+            <input type="submit" value="Upload" class="my-2 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm sm:w-auto px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-500 dark:focus:ring-red-800">
           </form>
         </div>
       {% else %}
@@ -113,8 +114,30 @@
       {% endif %}
     </div>
   </div>
-  <div class="secondary col-span-2 pt-6 pr-6">
-    <p>recommendation videos</p>
+  <div class="secondary col-span-3 lg:col-span-4 pt-6 pr-6 ml-6 md:ml-0">
+    <p>Recommendation Videos</p>
+    {% for video in rec_vids %}
+    <div class='grid grid-cols-12 py-2'>
+      <a href="{% url 'video_detail' video.pk %}" class='col-span-4'>
+        {% if video.thumbnail %}
+        <img src="{{video.thumbnail}}" alt="thumbnail">
+        {% else %}
+        <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
+        {% endif %}
+      </a>
+      <div class='flex flex-col col-span-8'>
+        <a href="{% url 'video_detail' video.pk %}">
+          <span><b>{{video.title}}</b></span></a>
+          <a href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+          {% if video.view > 1 %}
+          <span>{{video.view}} Views • {{video.created_at|date:'M j'}}</span>
+          {% elif video.view <= 1 %}
+          <span>{{video.view}} View • {{video.created_at|date:'M j'}}</span>
+          {% endif %}
+        </div> 
+    </div>
+    {% endfor %}
+
   </div>
 </div>
 <script src="{% static 'scripts/extra.js' %}"></script>
