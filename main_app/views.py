@@ -82,9 +82,7 @@ class VideoDetail(DetailView):
             pass
         context['video'] = video
         context['short_description'] = context['video'].description[:100]
-        print(context['short_description'])
         context['rest_description'] = context['video'].description[100:]
-
         context['comments'] = comments
         context['form'] = form
         return context
@@ -93,24 +91,32 @@ class VideoDetail(DetailView):
         form = CommentForm(request.POST)
         self.object = self.get_object()
         context = super().get_context_data(**kwargs)
-
-        video = Video.objects.filter(id=self.kwargs['pk'])[0]
+        pk = self.kwargs["pk"]
+        video = Video.objects.filter(id=pk)[0]
         comments = video.comment_set.all()
-
         context['video'] = video
+        context['short_description'] = context['video'].description[:100]
+        context['rest_description'] = context['video'].description[100:]
         context['comments'] = comments
         context['form'] = form
-
+        try:
+            thumbnail = Thumbnail.objects.get(video_id=pk)
+            context['thumbnail'] = thumbnail
+        except :
+            pass
+        try:
+            media = Media.objects.get(video_id=pk)
+            context['media'] = media
+        except :
+            pass
         if form.is_valid():
             body = form.cleaned_data['body']
-            # creates the form on db
             comment = Comment.objects.create(
                 body=body, video=video, user_id = self.request.user.id
             )
             form = CommentForm()
             context['form'] = form
             return self.render_to_response(context=context)
-        # currently, if text area is empty, page refreshes, no comment is added, but without the following line, breaks
         return self.render_to_response(context=context)
 
 @method_decorator(login_required, name='dispatch')

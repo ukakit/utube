@@ -7,13 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{% static 'scripts/all.min.js' %}" defer></script>
     <link rel="stylesheet" href="{% static 'styles/main.css' %}" />
+    <link rel="shortcut icon" href="{%  static 'favicon.ico' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>uTube</title>
 </head>
 <body class="bg-zinc-300">
     <nav class="flex items-center text-white bg-black px-4" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand start">
-            <a class="navbar-item p-5" href="/">uTube</a>
+        <div class="navbar-brand mr-16">
+            <a class="navbar-item flex flex-row items-center" href="/">
+                <img src="{%  static 'utube.svg' %}" alt='utube-logo'>
+                <span class="pl-3">uTube</span>
+            </a>
         </div>
         <div class="center grow text-center">
             <p>Search</p>
@@ -34,7 +38,7 @@
             </div>
         {% endif %}
     </nav>
-    <div class="container">
+    <div class="container min-w-full">
 
         {% block content %}{% endblock %}
 

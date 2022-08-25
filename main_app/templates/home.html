@@ -2,8 +2,9 @@
 {% load static %}
 
 {% block content %}
-{% for video in videos %}
-        <div class="video flex flex-col">
+    <div class='video-grid grid grid-cols-12 gap-6 p-4 sm:p-6 lg:p-12 xl:p-24 2xl:px-28'>
+        {% for video in videos %}
+        <div class="video col-span-12 md:col-span-4 lg:col-span-3 flex flex-col">
             <a href="{% url 'video_detail' video.pk %}">
                 {% if video.thumbnail %}
                 <img src="{{video.thumbnail}}" alt="thumbnail">
@@ -13,11 +14,12 @@
                 <span><b>{{video.title}}</b></span>
                 <a href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
             </a>
-                {% if video.view > 1 %}
-                    <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
-                {% elif video.view <= 1 %}
-                    <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
-                {% endif %}
-            </div>
-{% endfor %}
+            {% if video.view > 1 %}
+            <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
+            {% elif video.view <= 1 %}
+            <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
 {% endblock %}
