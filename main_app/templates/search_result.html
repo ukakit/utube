@@ -1,5 +1,29 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-
+<div class='grid place-content-center'>
+    {% for video in results %}
+        <div class="video grid grid-cols-12 py-3 mx-10 max-w-6xl place-content-center">
+            <a href="{% url 'video_detail' video.pk %}" class='col-span-4'>
+                {% if video.thumbnail %}
+                <img src="{{video.thumbnail}}" alt="thumbnail">
+                {% else %}
+                <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
+                {% endif %}
+            </a>
+            <div class='col-span-8 flex flex-col'>
+                <a href="{% url 'video_detail' video.pk %}"><span><b>{{video.title}}</b></span></a>
+                {% if video.view > 1 %}
+                <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
+                {% elif video.view <= 1 %}
+                <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
+                {% endif %}
+                <a href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+                <p>{{video.description|truncatechars:50}}</p>
+            </div>
+        </div>
+    {% empty %}
+        <h1 class='text-3xl py-5'>No result for {{query}}</h1>
+    {% endfor %}
+</div>    
 {% endblock %}

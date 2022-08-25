@@ -1,9 +1,11 @@
 from random import shuffle
+from re import search
 from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
 from django.views.generic import DetailView
 from django.urls import reverse
 from django.contrib.auth import login
@@ -50,6 +52,20 @@ class Signup(View):
         else:
             context = {"form": form}
             return render(request, "registration/signup.html", context)
+
+class SearchResultsView(TemplateView):
+    model = Video
+    template_name = "search_result.html"
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('search','')
+        print(query)
+        self.results = Video.objects.filter(title__icontains=query)
+        self.query = query
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        print(self.results)
+        return super().get_context_data(results=self.results,query=self.query, **kwargs)
 
 @method_decorator(login_required, name='dispatch')
 class VideoDetail(DetailView):
@@ -196,7 +212,7 @@ def add_thumb(request, pk):
             url = f"https://{bucket}.{os.environ['S3_BASE_URL']}{key}"
             Thumbnail.objects.create(url=url, video_id=pk)
         except Exception as e:
-            print('error occurred')
+            print('AWS S3 error occurred, please try again later')
             print(e)
     elif (photo_file.size > 1000000):
         messages.info(request, 'The thumbnail you have chosen is too big! We only accept file size less than 1MB.')
@@ -214,7 +230,7 @@ def add_media(request, pk):
             url = f"https://{bucket}.{os.environ['S3_BASE_URL']}{key}"
             Media.objects.create(url=url, video_id=pk)
         except Exception as e:
-            print('error occurred')
+            print('AWS S3 error occurred, please try again later')
             print(e)
     elif (media_file.size > 1000000):
         messages.info(request, 'The video you have chosen is too big! We only accept file size less than 50MB.')
