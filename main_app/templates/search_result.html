@@ -5,13 +5,15 @@
 <div class='grid place-content-center'>
     {% for video in results %}
         <div class="video grid grid-cols-12 py-3 mx-10 max-w-6xl place-content-center">
-            <a href="{% url 'video_detail' video.pk %}" class='col-span-4'>
-                {% if video.thumbnail %}
-                <img src="{{video.thumbnail}}" alt="thumbnail">
-                {% else %}
-                <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
-                {% endif %}
-            </a>
+            <div class='col-span-4 flex items-center'>
+                <a class="min-w-full" href="{% url 'video_detail' video.pk %}">
+                    {% if video.thumbnail %}
+                    <img class="min-w-full" src="{{video.thumbnail}}" alt="thumbnail">
+                    {% else %}
+                    <img class="min-w-full" src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
+                    {% endif %}
+                </a>
+            </div>
             <div class='col-span-8 flex flex-col ml-4 my-1'>
                 <a class='text-white font-bold text-xl'href="{% url 'video_detail' video.pk %}">{{video.title}}</a>
                 {% if video.view > 1 %}

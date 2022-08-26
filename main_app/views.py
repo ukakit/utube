@@ -33,7 +33,6 @@ class Home(TemplateView):
             try:
                 thumbnail = Thumbnail.objects.get(video_id=video_id)
                 context['videos'][i].thumbnail = thumbnail.url
-                print(context['videos'][i]['thumbnail'])
             except :
                 pass
         return context
@@ -59,11 +58,19 @@ class SearchResultsView(TemplateView):
     def get(self, request, *args, **kwargs):
         query = request.GET.get('search','')
         self.results = Video.objects.filter(title__icontains=query)
+        for i in range(len(self.results)):
+            video_id = self.results[i].id
+            try:
+                thumbnail = Thumbnail.objects.get(video_id=video_id)
+                self.results[i].thumbnail = thumbnail.url
+            except :
+                pass
         self.query = query
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(results=self.results,query=self.query, **kwargs)
+
 
 @method_decorator(login_required, name='dispatch')
 class VideoDetail(DetailView):
@@ -99,6 +106,13 @@ class VideoDetail(DetailView):
         all_vid = list(Video.objects.all().exclude(id=pk))
         shuffle(all_vid)
         rec_vids = all_vid[:10]
+        for i in range(len(rec_vids)):
+            video_id = rec_vids[i].id
+            try:
+                thumbnail = Thumbnail.objects.get(video_id=video_id)
+                rec_vids[i].thumbnail = thumbnail.url
+            except :
+                pass
         context['rec_vids'] = rec_vids
         context['short_description'] = context['video'].description[:100]
         context['rest_description'] = context['video'].description[100:]
@@ -202,7 +216,7 @@ class CommentDelete(UserPassesTestMixin, AccessMixin, DeleteView):
 
 def add_thumb(request, pk):
     photo_file = request.FILES.get('photo-file', None)
-    if photo_file and photo_file.size < 1000000:
+    if photo_file and photo_file.size < 2000000:
         s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:8] + photo_file.name[photo_file.name.rfind('.'):]
         try:
@@ -212,15 +226,17 @@ def add_thumb(request, pk):
             Thumbnail.objects.create(url=url, video_id=pk)
         except Exception as e:
             print('AWS S3 error occurred, please try again later')
-            print(e)
-    elif (photo_file.size > 1000000):
-        messages.info(request, 'The thumbnail you have chosen is too big! We only accept file size less than 1MB.')
+    elif (photo_file.size > 2000000):
+        messages.info(request, 'The thumbnail you have chosen is too big! We only accept file size less than 2MB.')
+        return HttpResponseRedirect(f'/video/{pk}')
+    elif (not photo_file):
+        messages.info(request, 'Please choose a file!')
         return HttpResponseRedirect(f'/video/{pk}')
     return redirect('video_detail', pk=pk)
 
 def add_media(request, pk):
     media_file = request.FILES.get('media-file', None)
-    if media_file and media_file.size < 50000000:
+    if media_file and media_file.size < 75000000:
         s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:8] + media_file.name[media_file.name.rfind('.'):]
         try:
@@ -230,9 +246,11 @@ def add_media(request, pk):
             Media.objects.create(url=url, video_id=pk)
         except Exception as e:
             print('AWS S3 error occurred, please try again later')
-            print(e)
-    elif (media_file.size > 1000000):
-        messages.info(request, 'The video you have chosen is too big! We only accept file size less than 50MB.')
+    elif (media_file.size > 75000000):
+        messages.info(request, 'The video you have chosen is too big! We only accept file size less than 75MB.')
+        return HttpResponseRedirect(f'/video/{pk}')
+    elif (not media_file):
+        messages.info(request, 'Please choose a file!')
         return HttpResponseRedirect(f'/video/{pk}')
     return redirect('video_detail', pk=pk)
 
