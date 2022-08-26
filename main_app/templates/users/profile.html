@@ -1,30 +1,29 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block title %}{{user.username}} - uTube{% endblock%}
 {% block content %}
-<div class="row">
-  <div class="col-6">
-      <h2>{{user.username}}'s Channel</h2>
-      <h2>Most Recent Uploads</h2>
-      {% for video in videos %}
-          <div class="videos">
-              <a href="{% url 'video_detail' video.pk %}">
-                  <span><b>{{video.title}}</b></span>
-                  <br>
-                  {% if video.thumbnail %}
-                      <img src="{{video.thumbnail}}" alt="thumbnail">
-                  {% else %}
-                      <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
-                  {% endif %}
-                  {% if video.view > 1 %}
-                      <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
-                  {% elif video.view <= 1 %}
-                      <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
-                  {% endif %}
-              </a>
-            </div>
+<div class="p-4 sm:p-6 lg:p-12 xl:p-24 2xl:px-28">
+    <h2 class='text-3xl'>{{user.username}}'s Channel</h2>
+    <h2 class='py-5'>Most Recent Uploads</h2>
+    <div class='video-grid grid grid-cols-12 gap-6'>
+    {% for video in videos %}
+        <div class="video col-span-12 md:col-span-4 lg:col-span-3 flex flex-col">
+            <a href="{% url 'video_detail' video.pk %}">
+                {% if video.thumbnail %}
+                <img src="{{video.thumbnail}}" alt="thumbnail">
+                {% else %}
+                <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
+                {% endif %}
+                <span><b>{{video.title}}</b></span>
+                <a href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+            </a>
+            {% if video.view > 1 %}
+            <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
+            {% elif video.view <= 1 %}
+            <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
+            {% endif %}
+        </div>
   {% endfor %}
-    <br>
   </div>
 </div>
 {% endblock content %}

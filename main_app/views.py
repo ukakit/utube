@@ -242,9 +242,7 @@ class UserDetail(DetailView):
     template_name = "users/profile.html"
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(self.kwargs['pk'])
         context['videos'] = Video.objects.filter(user_id = context['user'].id)
-        print(context)
         return context
 
 class UserUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
@@ -255,4 +253,4 @@ class UserUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
     def test_func(self):
         return self.request.user.id == self.get_object().id
     def get_success_url(self):
-        reverse('user_detail', kwargs={'pk': self.object.pk})
+        return (f'/account/{self.object.pk}')

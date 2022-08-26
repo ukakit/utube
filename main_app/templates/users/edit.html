@@ -1,24 +1,16 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
+{% block title %}Update Profile{% endblock%}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-6">
-      <h2 class="my-5">Edit profile</h2>
-      <form method="post" enctype="multipart/form-data">
+    <div class="edit-profile-container flex flex-col items-center pt-5">
+      <h2 class="text-3xl">Edit profile</h2>
+      <form method="post">
         {% csrf_token %}
-        <div class="form-group">
-          {{ form.username.label_tag }}
-          <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="id_username"
-            name="username" value='{{ form.username.value|default:user.username }}'>
-          {% if form.username.errors %}
+        {{form|crispy}}
+        {% if form.username.errors %}
           <div class="invalid-feedback">{{ form.username.errors }}</div>
-          {% endif %}
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        {% endif %}
+        <button type="submit" class="my-2 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm sm:w-auto px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-500 dark:focus:ring-red-800">Submit</button>
       </form>
-      <br>
     </div>
-  </div>
-</div>
 {% endblock content %}
