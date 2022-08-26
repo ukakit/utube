@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_tags %}
 {% block content %}
 <div class='grid place-content-center'>
     {% for video in results %}
@@ -11,15 +12,15 @@
                 <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
                 {% endif %}
             </a>
-            <div class='col-span-8 flex flex-col'>
-                <a href="{% url 'video_detail' video.pk %}"><span><b>{{video.title}}</b></span></a>
+            <div class='col-span-8 flex flex-col ml-4 my-1'>
+                <a class='font-bold text-xl'href="{% url 'video_detail' video.pk %}">{{video.title}}</a>
                 {% if video.view > 1 %}
-                <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
+                <span class='text-zinc-400'>{{video.view}} views • {{video.created_at|timesince|upto:','}} ago</span>
                 {% elif video.view <= 1 %}
-                <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
+                <span class='text-zinc-400'>{{video.view}} view • {{video.created_at|timesince|upto:','}} ago</span>
                 {% endif %}
-                <a href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
-                <p>{{video.description|truncatechars:50}}</p>
+                <a class='text-zinc-400 py-2' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+                <p class='text-zinc-400'>{{video.description|truncatechars:50}}</p>
             </div>
         </div>
     {% empty %}

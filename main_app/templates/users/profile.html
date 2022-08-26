@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_tags %}
 {% block title %}{{user.username}} - uTube{% endblock%}
 {% block content %}
 <div class="p-4 sm:p-6 lg:p-12 xl:p-24 2xl:px-28">
@@ -15,12 +16,12 @@
                 <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
                 {% endif %}
                 <span><b>{{video.title}}</b></span>
-                <a href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+                <a class='text-zinc-400' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
             </a>
             {% if video.view > 1 %}
-            <span>{{video.view}} Views • {{video.created_at|timesince}} ago</span>
+            <span class='text-zinc-400'>{{video.view}} views • {{video.created_at|timesince|upto:','}} ago</span>
             {% elif video.view <= 1 %}
-            <span>{{video.view}} View • {{video.created_at|timesince}} ago</span>
+            <span class='text-zinc-400'>{{video.view}} view • {{video.created_at|timesince|upto:','}} ago</span>
             {% endif %}
         </div>
   {% endfor %}

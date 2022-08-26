@@ -58,13 +58,11 @@ class SearchResultsView(TemplateView):
     template_name = "search_result.html"
     def get(self, request, *args, **kwargs):
         query = request.GET.get('search','')
-        print(query)
         self.results = Video.objects.filter(title__icontains=query)
         self.query = query
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        print(self.results)
         return super().get_context_data(results=self.results,query=self.query, **kwargs)
 
 @method_decorator(login_required, name='dispatch')
@@ -98,9 +96,9 @@ class VideoDetail(DetailView):
         except :
             pass
         context['video'] = video
-        all_vid = list(Video.objects.all())
+        all_vid = list(Video.objects.all().exclude(id=pk))
         shuffle(all_vid)
-        rec_vids = all_vid[:5]
+        rec_vids = all_vid[:10]
         context['rec_vids'] = rec_vids
         context['short_description'] = context['video'].description[:100]
         context['rest_description'] = context['video'].description[100:]
@@ -116,9 +114,9 @@ class VideoDetail(DetailView):
         video = Video.objects.filter(id=pk)[0]
         comments = video.comment_set.all()
         context['video'] = video
-        all_vid = list(Video.objects.all())
+        all_vid = list(Video.objects.all().exclude(id=pk))
         shuffle(all_vid)
-        rec_vids = all_vid[:5]
+        rec_vids = all_vid[:10]
         context['rec_vids'] = rec_vids
         context['short_description'] = context['video'].description[:100]
         context['rest_description'] = context['video'].description[100:]

@@ -11,12 +11,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}uTube{% endblock%}</title>
 </head>
-<body class="bg-zinc-300">
+<body class="bg-zinc-900">
     <nav class="flex items-center text-white bg-black px-4" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand mr-16">
-            <a class="navbar-item flex flex-row items-center" href="/">
-                <img src="{%  static 'utube.svg' %}" alt='utube-logo'>
-                <span class="pl-3">uTube</span>
+        <div class="navbar-brand min-w-max">
+            <a class="navbar-item" href="/">
+                <img class="min-w-[125px]" src="{%  static 'utube.svg' %}" alt='utube-logo'>
             </a>
         </div>
         <div class="center grow text-center">
@@ -45,7 +44,7 @@
             </div>
         {% endif %}
     </nav>
-    <div class="container min-w-full">
+    <div class="container min-w-full text-white">
 
         {% block content %}{% endblock %}
 
