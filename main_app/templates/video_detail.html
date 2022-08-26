@@ -88,28 +88,24 @@
       {% if comments %}
         <div class="comments-list">
           {% for comment in comments %}
-            <div class="card p-2">
-              <div class="row">
-                <div>
-                  <a href="{% url 'user_detail' video.user.id%}"><strong>{{ comment.user }}</strong></a>
-                  <span class='text-zinc-400'><small>{{ comment.created_at|timesince|upto:','}} ago</small></span>
-                </div>
-                <div>
-                  <p>{{ comment.body }}</p>
-                  {% if comment.user_id == user.id %}
-                    <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
-                      <span class="icon">
-                        <i class="fa-regular fa-edit"></i>
-                      </span>
-                    </a>
-                    <a href="{% url 'comment_delete' video_pk=video.pk pk=comment.id%}">
-                      <span class="icon">
-                        <i class="fa-regular fa-trash-can"></i>
-                      </span>
-                    </a>
-                  {% endif %}
-                </div>
-              </div>
+            <div>
+              <a href="{% url 'user_detail' video.user.id%}"><strong>{{ comment.user }}</strong></a>
+              <span class='text-zinc-400'><small>{{ comment.created_at|timesince|upto:','}} ago</small></span>
+            </div>
+            <div>
+              <p>{{ comment.body }}</p>
+              {% if comment.user_id == user.id %}
+                <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
+                  <span class="icon">
+                    <i class="fa-regular fa-edit"></i>
+                  </span>
+                </a>
+                <a href="{% url 'comment_delete' video_pk=video.pk pk=comment.id%}">
+                  <span class="icon">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </span>
+                </a>
+              {% endif %}
             </div>
           {% endfor %}
         </div>
