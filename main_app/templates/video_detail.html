@@ -7,7 +7,7 @@
   <div class="primary col-span-9 pt-6 pr-6 ml-6 lg:col-span-8 lg:ml-12">
     {% if media %}
     <div class='player flex items-center justify-center'>
-      <video src="{{media.url}}" width='1280' height='720' controls></video>
+      <video src="{{media.url}}" width='1280' height='720' controls autoplay></video>
     </div>
     {% endif %}
     {% if messages %}
@@ -47,7 +47,7 @@
         </div>
       {% endif %}
     {% endif %}
-    <h1 class="text-xl video-title">{{video.title}}</h1>
+    <h1 class="pt-2 text-xl video-title">{{video.title}}</h1>
     <p class='text-zinc-400 mb-5'>{{video.view}} views • {{video.created_at|date:"M j, Y"}}</p>
     <div class="video-info flex">
       <div class="uploader-icon">
