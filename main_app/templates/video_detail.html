@@ -65,16 +65,14 @@
           <button onclick="showMore()" id="myBtn" class="italic font-thin">Read more</button>
         </div>
         {% if video.user_id == user.id %}
-        <a href="{% url 'video_update' video.pk %}">
-          <span class="icon">
-            <i class="fa-regular fa-edit"></i>
-          </span>
-        </a>
-        <a href="{% url 'video_delete' video.pk %}">
-          <span class="icon">
-            <i class="fa-regular fa-trash-can"></i>
-          </span>
-        </a>
+        <div class='flex'>
+          <a href="{% url 'video_update' video.pk %}">
+            <img class='min-h-[16px] max-w-[16px]' src="{%  static 'edit.svg' %}" alt='edit-logo'>
+          </a>
+          <a href="{% url 'video_delete' video.pk %}">
+            <img class='min-h-[16px] max-w-[16px]' src="{%  static 'trash.svg' %}" alt='trash-logo'>
+          </a>
+        </div>
         {% endif %}
       </div>
     </div>
@@ -107,16 +105,14 @@
               <span class='text-zinc-400'><small>{{ comment.created_at|timesince|upto:','}} ago</small></span>
               <p>{{ comment.body }}</p>
               {% if comment.user_id == user.id %}
-                <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
-                  <span class="icon">
-                    <i class="fa-regular fa-edit"></i>
-                  </span>
-                </a>
-                <a href="{% url 'comment_delete' video_pk=video.pk pk=comment.id%}">
-                  <span class="icon">
-                    <i class="fa-regular fa-trash-can"></i>
-                  </span>
-                </a>
+                <div class='flex'>
+                  <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
+                    <img class='min-h-[16px] max-w-[16px]' src="{%  static 'edit.svg' %}" alt='edit-logo'>
+                  </a>
+                  <a href="{% url 'comment_delete' video_pk=video.pk pk=comment.id%}">
+                    <img class='min-h-[16px] max-w-[16px]' src="{%  static 'trash.svg' %}" alt='trash-logo'>
+                  </a>
+                </div>
               {% endif %}
             </div>
           </div>
