@@ -13,13 +13,18 @@
                 {% endif %}
             </a>
             <div class='col-span-8 flex flex-col ml-4 my-1'>
-                <a class='font-bold text-xl'href="{% url 'video_detail' video.pk %}">{{video.title}}</a>
+                <a class='text-white font-bold text-xl'href="{% url 'video_detail' video.pk %}">{{video.title}}</a>
                 {% if video.view > 1 %}
                 <span class='text-zinc-400'>{{video.view}} views • {{video.created_at|timesince|upto:','}} ago</span>
                 {% elif video.view <= 1 %}
                 <span class='text-zinc-400'>{{video.view}} view • {{video.created_at|timesince|upto:','}} ago</span>
                 {% endif %}
-                <a class='text-zinc-400 py-2' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+                <div class='py-2 flex items-center'>
+                    <a class="w-[36px] h-[36px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
+                        {{video.user|capfirst|slice:":1"}}
+                    </a>
+                    <a class='text-zinc-400 pl-2' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+                </div>
                 <p class='text-zinc-400'>{{video.description|truncatechars:50}}</p>
             </div>
         </div>

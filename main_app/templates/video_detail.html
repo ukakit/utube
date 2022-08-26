@@ -5,6 +5,11 @@
 {% block content %}
 <div class="video-player-container grid grid-cols-2 md:grid-cols-12">
   <div class="primary col-span-9 pt-6 pr-6 ml-6 lg:col-span-8 lg:ml-12">
+    {% if media %}
+    <div class='player flex items-center justify-center'>
+      <video src="{{media.url}}" width='1280' height='720' controls></video>
+    </div>
+    {% endif %}
     {% if messages %}
       <ul class="messages">
         {% for message in messages %}
@@ -13,8 +18,8 @@
       </ul>
     {% endif %}
     {% if not thumbnail and video.user_id == user.id %}
-      <div class="thumbnail-upload-container">
-        <h2>Upload a Thumbnail:</h2>
+      <div class="thumbnail-upload-container h-[200px]">
+        <h2>Upload Thumbnail:</h2>
         <form action="{% url 'add_thumb' video.id %}" enctype="multipart/form-data" method="POST" alt="thumbnail" class='pl-2'>
           {% csrf_token %}
           <input type="file" name="photo-file" class="my-2 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm sm:w-auto px-2.5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-500 dark:focus:ring-red-800">
@@ -25,7 +30,7 @@
     {% endif %}
     {% if not media %}
       {% if video.user_id == user.id %}
-        <div class="video-upload-container">
+        <div class="video-upload-container h-[200px]">
           <h2>Upload Video File:</h2>
           <form action="{% url 'add_media' video.id %}" enctype="multipart/form-data" method="POST" alt="media" class='pl-2'>
             {% csrf_token %}
@@ -37,27 +42,29 @@
           </form>
         </div>
       {% else %}
-        <div class="video-upload-container">
+        <div class="video-upload-container h-[200px]">
           <h2>Pending on Content Creator to Upload a video</h2>
         </div>
       {% endif %}
-    {% elif media %}
-      <div class='player flex items-center justify-center'>
-        <video src="{{media.url}}" width='1280' height='720' controls></video>
-      </div>
     {% endif %}
-    <div class="video-info">
-      <h1 class="text-xl video-title">{{video.title}}</h1>
-      <p class='text-zinc-400 mb-5'>{{video.view}} views • {{video.created_at|date:"M j, Y"}}</p>
-      <a class='text-lg' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
-      <div class="description">
-        <p>{{short_description}}
-          <span id="dots">...</span>
-          <span id="more">{{rest_description}}</span>
-        </p>
-        <button onclick="showMore()" id="myBtn" class="italic font-thin">Read more</button>
+    <h1 class="text-xl video-title">{{video.title}}</h1>
+    <p class='text-zinc-400 mb-5'>{{video.view}} views • {{video.created_at|date:"M j, Y"}}</p>
+    <div class="video-info flex">
+      <div class="uploader-icon">
+        <a class="w-[40px] h-[40px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
+          {{video.user|capfirst|slice:":1"}}
+        </a>
       </div>
-      {% if video.user_id == user.id %}
+      <div class='pl-3'>
+        <a class='text-lg text-white' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+        <div class="description">
+          <p>{{short_description}}
+            <span id="dots">...</span>
+            <span id="more">{{rest_description}}</span>
+          </p>
+          <button onclick="showMore()" id="myBtn" class="italic font-thin">Read more</button>
+        </div>
+        {% if video.user_id == user.id %}
         <a href="{% url 'video_update' video.pk %}">
           <span class="icon">
             <i class="fa-regular fa-edit"></i>
@@ -68,18 +75,19 @@
             <i class="fa-regular fa-trash-can"></i>
           </span>
         </a>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
     <div class="comments">
       <h2 class='py-5'>
-        <span>{{ comments.count }} Comment{{ comments.length|pluralize }}
+        <span>{{ comments.count }} Comment{{comments.count|pluralize}}
         </span>
       </h2>
       <div class="add-comment-form">
         <form method='POST'>
           {% csrf_token %}
           <div class="form-group flex flex-col items-end">
-            <input class="mb-2 bg-transparent border-b text-gray-400 text-sm block w-full p-2.5 placeholder-gray-400 form-control {% if form.body.errors %}is-invalid{% endif %}" id="id_body" name="body" placeholder='add a comment...'
+            <input class="mb-2 bg-transparent border-b text-white text-sm block w-full p-2.5 placeholder-gray-400 form-control {% if form.body.errors %}is-invalid{% endif %}" id="id_body" name="body" placeholder='add a comment...'
             rows="4">{{ form.body.value|default:'' }}</input>
             <button type="submit" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm min-w-fit px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Comment</button>
           </div>
@@ -88,11 +96,15 @@
       {% if comments %}
         <div class="comments-list">
           {% for comment in comments %}
-            <div>
-              <a href="{% url 'user_detail' video.user.id%}"><strong>{{ comment.user }}</strong></a>
+          <div class='flex comment py-3'>
+            <div class='icon justify-self-center'>
+              <a class="w-[40px] h-[40px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
+              {{comment.user|capfirst|slice:":1"}}
+              </a>
+            </div>            
+            <div class='comment-content pl-4'>
+              <a class='font-bold text-white'href="{% url 'user_detail' video.user.id%}">{{ comment.user }}</a>
               <span class='text-zinc-400'><small>{{ comment.created_at|timesince|upto:','}} ago</small></span>
-            </div>
-            <div>
               <p>{{ comment.body }}</p>
               {% if comment.user_id == user.id %}
                 <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
@@ -107,8 +119,9 @@
                 </a>
               {% endif %}
             </div>
+          </div>
           {% endfor %}
-        </div>
+          </div>
       {% endif %}
     </div>
   </div>
@@ -123,15 +136,15 @@
         <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
         {% endif %}
       </a>
-      <div class='flex flex-col col-span-8 ml-2 justify-evenly'>
-        <a class='font-bold' href="{% url 'video_detail' video.pk %}">{{video.title}}</a>
-          <a class='text-zinc-400' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
-          {% if video.view > 1 %}
+      <div class='flex flex-col col-span-8 ml-2 justify-start'>
+        <a class='text-white font-bold pb-2' href="{% url 'video_detail' video.pk %}">{{video.title|truncatechars:25}}</a>
+        <a class='text-zinc-400' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+        {% if video.view > 1 %}
           <span class='text-zinc-400'>{{video.view}} views • {{video.created_at|timesince|upto:','}} ago</span>
-          {% elif video.view <= 1 %}
+        {% elif video.view <= 1 %}
           <span class='text-zinc-400'>{{video.view}} view • {{video.created_at|timesince|upto:','}} ago</span>
-          {% endif %}
-        </div> 
+        {% endif %}
+      </div> 
     </div>
     {% endfor %}
 

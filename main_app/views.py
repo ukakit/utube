@@ -163,7 +163,8 @@ class VideoUpdate(UserPassesTestMixin, AccessMixin, UpdateView):
     def test_func(self):
         return self.request.user == self.get_object().user
     def get_success_url(self):
-        reverse('video_detail', kwargs={'pk': self.object.pk})
+        return (f'/video/{self.object.pk}')
+
 
 class VideoDelete(UserPassesTestMixin, AccessMixin, DeleteView):
 

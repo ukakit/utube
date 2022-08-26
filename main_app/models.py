@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 
 class Video(models.Model):
 
-    title = models.CharField(max_length=100)
-    description = models.TextField(max_length=500)
+    title = models.CharField(max_length=150)
+    description = models.TextField(max_length=1500)
     created_at = models.DateTimeField(auto_now_add=True)
     view = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -17,7 +17,7 @@ class Video(models.Model):
         ordering = ['-created_at']
 
 class Comment(models.Model):
-    body = models.TextField(max_length=500)
+    body = models.TextField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

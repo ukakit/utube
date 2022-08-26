@@ -12,14 +12,23 @@
                 {% else %}
                 <img src="{% static 'no_thumb_placeholder.jpg' %}" alt="pending-thumbnail">
                 {% endif %}
-                <span class='font-bold'>{{video.title}}</span>
-                <a class='text-zinc-400' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
             </a>
-            {% if video.view > 1 %}
-            <span class='text-zinc-400'>{{video.view}} views • {{video.created_at|timesince|upto:','}} ago</span>
-            {% elif video.view <= 1 %}
-            <span class='text-zinc-400'>{{video.view}} view • {{video.created_at|timesince|upto:','}} ago</span>
-            {% endif %}
+            <div class='pt-2 flex flex-row'>
+                <div class='justify-self-center'>
+                    <a class="w-[36px] h-[36px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
+                    {{video.user|capfirst|slice:":1"}}
+                    </a>
+                </div>
+                <div class='grow flex flex-col pl-2'>
+                    <a href="{% url 'video_detail' video.pk %}" class='text-white font-bold'>{{video.title}}</a>
+                    <a class='text-zinc-400' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+                    {% if video.view > 1 %}
+                    <span class='text-zinc-400'>{{video.view}} views • {{video.created_at|timesince|upto:','}} ago</span>
+                    {% elif video.view <= 1 %}
+                    <span class='text-zinc-400'>{{video.view}} view • {{video.created_at|timesince|upto:','}} ago</span>
+                    {% endif %}
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>

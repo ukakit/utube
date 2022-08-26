@@ -34,7 +34,7 @@
             <div class="end navbar-menu flex items-center max-h-[60px]">
                 <a class="navbar-item px-4 py-3" href="{% url 'video_create' %}"><i class="fa-solid fa-cloud-arrow-up"></i></a>
                 <div class='dropdown'>
-                    <button class="min-w-[50px] min-h-[50px] bg-white rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="min-w-[50px] min-h-[50px] bg-red-200 rounded-full text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         {{user.username|capfirst|slice:":1"}}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark">
