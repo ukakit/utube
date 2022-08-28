@@ -72,7 +72,6 @@ class SearchResultsView(TemplateView):
         return super().get_context_data(results=self.results,query=self.query, **kwargs)
 
 
-@method_decorator(login_required, name='dispatch')
 class VideoDetail(DetailView):
     model = Video
     template_name = "video_detail.html"
@@ -131,6 +130,13 @@ class VideoDetail(DetailView):
         all_vid = list(Video.objects.all().exclude(id=pk))
         shuffle(all_vid)
         rec_vids = all_vid[:10]
+        for i in range(len(rec_vids)):
+            video_id = rec_vids[i].id
+            try:
+                thumbnail = Thumbnail.objects.get(video_id=video_id)
+                rec_vids[i].thumbnail = thumbnail.url
+            except :
+                pass
         context['rec_vids'] = rec_vids
         context['short_description'] = context['video'].description[:100]
         context['rest_description'] = context['video'].description[100:]
@@ -153,8 +159,8 @@ class VideoDetail(DetailView):
             )
             form = CommentForm()
             context['form'] = form
-            return self.render_to_response(context=context)
-        return self.render_to_response(context=context)
+            return redirect('video_detail', pk=pk)
+        return redirect('video_detail', pk=pk)
 
 @method_decorator(login_required, name='dispatch')
 class VideoCreate(CreateView):
@@ -226,11 +232,11 @@ def add_thumb(request, pk):
             Thumbnail.objects.create(url=url, video_id=pk)
         except Exception as e:
             print('AWS S3 error occurred, please try again later')
+    elif (not photo_file):
+        messages.info(request, 'Please choose a thumbnail file!')
+        return HttpResponseRedirect(f'/video/{pk}')
     elif (photo_file.size > 2000000):
         messages.info(request, 'The thumbnail you have chosen is too big! We only accept file size less than 2MB.')
-        return HttpResponseRedirect(f'/video/{pk}')
-    elif (not photo_file):
-        messages.info(request, 'Please choose a file!')
         return HttpResponseRedirect(f'/video/{pk}')
     return redirect('video_detail', pk=pk)
 
@@ -246,11 +252,11 @@ def add_media(request, pk):
             Media.objects.create(url=url, video_id=pk)
         except Exception as e:
             print('AWS S3 error occurred, please try again later')
+    elif (not media_file):
+        messages.info(request, 'Please choose a video file!')
+        return HttpResponseRedirect(f'/video/{pk}')
     elif (media_file.size > 75000000):
         messages.info(request, 'The video you have chosen is too big! We only accept file size less than 75MB.')
-        return HttpResponseRedirect(f'/video/{pk}')
-    elif (not media_file):
-        messages.info(request, 'Please choose a file!')
         return HttpResponseRedirect(f'/video/{pk}')
     return redirect('video_detail', pk=pk)
 
