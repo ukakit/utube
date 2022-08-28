@@ -4,7 +4,7 @@
 {% block title %}{{video.title}} - uTube{% endblock%}
 {% block content %}
 <div class="video-player-container grid grid-cols-2 md:grid-cols-12">
-  <div class="primary col-span-9 pt-6 pr-6 ml-6 lg:col-span-8 lg:ml-12 xl:w-[1280px] xl:justify-self-end">
+  <div class="primary col-span-9 pt-6 pr-6 ml-6 lg:col-span-8 lg:ml-12">
     {% if media %}
     <div class='player flex items-center justify-center'>
       <video src="{{media.url}}" width='1280' height='720' controls autoplay></video>
