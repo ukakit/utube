@@ -47,6 +47,7 @@ class Signup(View):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            messages.success(request, "Welcome! Thank you for registering!")
             return redirect("home")
         else:
             context = {"form": form}

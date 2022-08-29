@@ -27,7 +27,7 @@
                     </a>
                     <a class='text-zinc-400 pl-2' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
                 </div>
-                <p class='text-zinc-400'>{{video.description|truncatechars:50}}</p>
+                <p class='text-zinc-400'>{{video.description|truncatewords:12}}</p>
             </div>
         </div>
     {% empty %}

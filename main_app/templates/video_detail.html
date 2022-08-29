@@ -4,7 +4,7 @@
 {% block title %}{{video.title}} - uTube{% endblock%}
 {% block content %}
 <div class="video-player-container grid grid-cols-2 md:grid-cols-12">
-  <div class="primary col-span-9 pt-6 pr-6 ml-6 lg:col-span-8 lg:ml-12">
+  <div class="primary col-span-9 pt-6 pr-6 ml-6 lg:col-span-8 lg:ml-12 flex flex-col items-center">
     {% if media %}
     <div class='player flex items-center justify-center'>
       <video src="{{media.url}}" width='1280' height='720' controls autoplay></video>
@@ -47,78 +47,80 @@
         </div>
       {% endif %}
     {% endif %}
-    <h1 class="pt-2 text-xl video-title">{{video.title}}</h1>
-    <p class='text-zinc-400 mb-5'>{{video.view}} views • {{video.created_at|date:"M j, Y"}}</p>
-    <div class="video-info flex">
-      <div class="uploader-icon">
-        <a class="w-[40px] h-[40px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
-          {{video.user|capfirst|slice:":1"}}
-        </a>
+    <div class='min-w-[500px] xl:min-w-[700px] 2xl:min-w-[1000px] max-w-[1280px]'>
+      <h1 class="pt-2 text-xl video-title">{{video.title}}</h1>
+      <p class='text-zinc-400 mb-5'>{{video.view}} views • {{video.created_at|date:"M j, Y"}}</p>
+      <div class="video-info flex">
+        <div class="uploader-icon">
+          <a class="w-[40px] h-[40px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
+            {{video.user|capfirst|slice:":1"}}
+          </a>
+        </div>
+        <div class='pl-3'>
+          <a class='text-lg text-white' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
+          <div class="description">
+            <p>{{short_description}}
+              <span id="dots">...</span>
+              <span id="more">{{rest_description}}</span>
+            </p>
+            <button onclick="showMore()" id="myBtn" class="italic font-thin">Read more</button>
+          </div>
+          {% if video.user_id == user.id %}
+          <div class='flex'>
+            <a href="{% url 'video_update' video.pk %}">
+              <img class='min-h-[16px] max-w-[16px]' src="{%  static 'edit.svg' %}" alt='edit-logo'>
+            </a>
+            <a href="{% url 'video_delete' video.pk %}">
+              <img class='min-h-[16px] max-w-[16px]' src="{%  static 'trash.svg' %}" alt='trash-logo'>
+            </a>
+          </div>
+          {% endif %}
+        </div>
       </div>
-      <div class='pl-3'>
-        <a class='text-lg text-white' href="{% url 'user_detail' video.user.id%}">{{video.user}}</a>
-        <div class="description">
-          <p>{{short_description}}
-            <span id="dots">...</span>
-            <span id="more">{{rest_description}}</span>
-          </p>
-          <button onclick="showMore()" id="myBtn" class="italic font-thin">Read more</button>
+      <div class="comments">
+        <h2 class='py-5'>
+          <span>{{ comments.count }} Comment{{comments.count|pluralize}}
+          </span>
+        </h2>
+        <div class="add-comment-form">
+          <form method='POST'>
+            {% csrf_token %}
+            <div class="form-group flex flex-col items-end">
+              <input class="mb-2 bg-transparent border-b text-white text-sm block w-full p-2.5 placeholder-gray-400 form-control {% if form.body.errors %}is-invalid{% endif %}" id="id_body" name="body" placeholder='add a comment...'
+              rows="4">{{ form.body.value|default:'' }}</input>
+              <button type="submit" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm min-w-fit px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Comment</button>
+            </div>
+          </form>
         </div>
-        {% if video.user_id == user.id %}
-        <div class='flex'>
-          <a href="{% url 'video_update' video.pk %}">
-            <img class='min-h-[16px] max-w-[16px]' src="{%  static 'edit.svg' %}" alt='edit-logo'>
-          </a>
-          <a href="{% url 'video_delete' video.pk %}">
-            <img class='min-h-[16px] max-w-[16px]' src="{%  static 'trash.svg' %}" alt='trash-logo'>
-          </a>
-        </div>
+        {% if comments %}
+          <div class="comments-list">
+            {% for comment in comments %}
+            <div class='flex comment py-3'>
+              <div class='icon justify-self-center'>
+                <a class="w-[40px] h-[40px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
+                {{comment.user|capfirst|slice:":1"}}
+                </a>
+              </div>            
+              <div class='comment-content pl-4'>
+                <a class='font-bold text-white'href="{% url 'user_detail' video.user.id%}">{{ comment.user }}</a>
+                <span class='text-zinc-400'><small>{{ comment.created_at|timesince|upto:','}} ago</small></span>
+                <p>{{ comment.body }}</p>
+                {% if comment.user_id == user.id %}
+                  <div class='flex'>
+                    <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
+                      <img class='min-h-[16px] max-w-[16px]' src="{%  static 'edit.svg' %}" alt='edit-logo'>
+                    </a>
+                    <a href="{% url 'comment_delete' video_pk=video.pk pk=comment.id%}">
+                      <img class='min-h-[16px] max-w-[16px]' src="{%  static 'trash.svg' %}" alt='trash-logo'>
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+            </div>
         {% endif %}
       </div>
-    </div>
-    <div class="comments">
-      <h2 class='py-5'>
-        <span>{{ comments.count }} Comment{{comments.count|pluralize}}
-        </span>
-      </h2>
-      <div class="add-comment-form">
-        <form method='POST'>
-          {% csrf_token %}
-          <div class="form-group flex flex-col items-end">
-            <input class="mb-2 bg-transparent border-b text-white text-sm block w-full p-2.5 placeholder-gray-400 form-control {% if form.body.errors %}is-invalid{% endif %}" id="id_body" name="body" placeholder='add a comment...'
-            rows="4">{{ form.body.value|default:'' }}</input>
-            <button type="submit" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm min-w-fit px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Comment</button>
-          </div>
-        </form>
-      </div>
-      {% if comments %}
-        <div class="comments-list">
-          {% for comment in comments %}
-          <div class='flex comment py-3'>
-            <div class='icon justify-self-center'>
-              <a class="w-[40px] h-[40px] bg-red-200 rounded-full border-gray-50 text-black text-lg hover:bg-red-700 hover:text-white flex justify-center items-center" href="{% url 'user_detail' video.user.id%}">
-              {{comment.user|capfirst|slice:":1"}}
-              </a>
-            </div>            
-            <div class='comment-content pl-4'>
-              <a class='font-bold text-white'href="{% url 'user_detail' video.user.id%}">{{ comment.user }}</a>
-              <span class='text-zinc-400'><small>{{ comment.created_at|timesince|upto:','}} ago</small></span>
-              <p>{{ comment.body }}</p>
-              {% if comment.user_id == user.id %}
-                <div class='flex'>
-                  <a href="{% url 'comment_update' video_pk=video.pk pk=comment.id%}">
-                    <img class='min-h-[16px] max-w-[16px]' src="{%  static 'edit.svg' %}" alt='edit-logo'>
-                  </a>
-                  <a href="{% url 'comment_delete' video_pk=video.pk pk=comment.id%}">
-                    <img class='min-h-[16px] max-w-[16px]' src="{%  static 'trash.svg' %}" alt='trash-logo'>
-                  </a>
-                </div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-          </div>
-      {% endif %}
     </div>
   </div>
   <div class="secondary col-span-3 lg:col-span-4 pt-6 pr-6 ml-6 md:ml-0">
