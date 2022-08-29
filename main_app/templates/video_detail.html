@@ -11,11 +11,12 @@
     </div>
     {% endif %}
     {% if messages %}
-      <ul class="messages">
         {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }} text-xl text-red-500 text-center" {% endif %}>{{ message }}</li>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close text-xl" data-bs-dismiss="alert" aria-label="Close">X</button>
+        </div>
         {% endfor %}
-      </ul>
     {% endif %}
     {% if not thumbnail and video.user_id == user.id %}
       <div class="thumbnail-upload-container h-[200px]">
